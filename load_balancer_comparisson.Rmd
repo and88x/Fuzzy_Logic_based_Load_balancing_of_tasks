@@ -1,0 +1,342 @@
+---
+title: "Fuzzy Logic based Load Balancer"
+author: "Andres Fernando Garcia"
+date: "3/6/2021"
+output:
+  github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, cache=FALSE, message=FALSE, hide = TRUE, warning = FALSE)
+```
+```{r echo = FALSE}
+source('./load_databases.R')
+```
+
+<img src="./load_balancer_img.jpeg"
+     height="40%" 
+     width="40%"/>
+
+## Projects details
+The present project consists of a [load balancer](https://en.wikipedia.org/wiki/Load_balancing_(computing)) based on the Artificial Bee Colony ([ABC](https://en.wikipedia.org/wiki/Artificial_bee_colony_algorithm)) algorithm and Fuzzy Logic. The project is programmed in Java using the [CloudSim](http://www.cloudbus.org/cloudsim/doc/api/overview-summary.html) framework, in its version 3.0.3. In the first instance, the [cloudlets'](https://en.wikipedia.org/wiki/Cloudlet#:~:text=A%20cloudlet%20is%20a%20mobility,mobile%20devices%20with%20lower%20latency.) tasks are assigned to a Virtual Machine (VM) according to the ABC algorithm. After that, tasks are reassigned using Fuzzy Logic blocks to select the best Host and VM. This project pretends to analyze if this approach improves some Quality of service ([QoS](https://en.wikipedia.org/wiki/Quality_of_service)) parameters as Degree of Imbalance, Response Time, Cost, and so on. All QoS parameters mentioned in the present work are shown in the article: *[“Honey bee behavior inspired load balancing of tasks in cloud computing environments”](http://www.ttcenter.ir/ArticleFiles/ENARTICLE/3132.pdf)*.
+
+<img src="./flux.png"
+     height="40%" 
+     width="40%"/>
+
+
+The parameters of the Fuzzy Host Selector are Capacity, Host Load, and Host Response Time. The parameters of Fuzzy VM Selector are Consumed Power, VM Cost, and VM Execution Time. The fuzzy blocks were programmed using the [jFuzzyLogic](http://jfuzzylogic.sourceforge.net/html/java.html) library.
+
+## Results and discusion
+
+In this section a comparison between three different approaches for load balancing is made. 
+The three algorithms taken in count are: *honey bee behavior inspired load balancing* (HBB-LB, proposed in the article previously mentioned), *Load Balancing Algorithm based
+on Honeybee behavior* (LBA-HB) and the proposed *Improved LBA-HB* (ILBA-HB). For more details refer to [this](https://d1wqtxts1xzle7.cloudfront.net/66255412/ijatcse841022021.pdf?1618310229=&response-content-disposition=inline%3B+filename%3DHybrid_Load_Balancing_Approach_based_on.pdf&Expires=1623284460&Signature=DZOUAemwX5WHSvMM0CSBO1YBgF1NjcDLTloKKahz-D8vweRX1SymVZelVWVDH2O0WP3MMzAaRqNcKO9N0cwTnM8esc-C-iLC9W1g-0A2DlOXhK0UNwdPS4hYg~NkkK-LLG3R~N7COzWT6ckkbHoOdfwYygb90hRsefEMYUe9SVsz2J5kUIRgt96ukKhfBQCvcbM9HrgHhOZ-JeoIMu-47Nyl8FNY42LV~47p~EWl7X6kJW~Im3XgxLufrFahaqWmrcpo7pGO67oPF2d2h-sJQJNdO2-JqU~WrlxfGlNAVKzSoDdUTLRlC0ubuuL1KEkmucr5tzR314eWBLF9lqgmtQ__&Key-Pair-Id=APKAJLOHF5GGSLRBV4ZA) document.
+The simulation with the CloudSim framework follow the next steps:
+
+1. Initialize the CloudSim package
+2. Create Datacenters
+3. Create Broker
+4. Create VMs and Cloudlets and send them to broker
+5. Starts the simulation
+6. Save results when simulation is over
+
+The results of each algorithm are visually summarized using boxplots and tables with the statistics of they.
+The first response to be analyzed is the Response Time (RT).
+This measure is important to analyze for a VM which determine the readiness of VM to accept the tasks.
+The next figure shows the box plots representing the distribution of results for RT. 
+The statistics values for these distributions are in the table 1.
+
+```{r}
+#
+q <- dataT %>% ggplot(aes(x = Algorithm, y = RT))
+q <- q + geom_boxplot(aes(fill=Algorithm))
+q <- q + labs(x = "Experiment", y = "Response time [sec]")
+q <- q + two_images
+#
+```
+
+```{r RT_boxplot, fig.align='center', fig.width=4, fig.height=3, fig.show="hold", out.width="49%"}
+q + scale_fill_manual(values=my_colors)
+```
+
+```{r RT_table}
+kable(fread("Stat,HBB-LB,LBA-HB,ILBA-HB
+Min.,6.36,1.46,1.396
+1st Qu.,19.08,14.96,14.432
+Median,64.28,36.70,34.922
+Mean,97.40,46.32,44.513
+3rd Qu.,148.78,68.17,64.663
+Max.,409.40,155.65,152.632"), align='cccc', caption="Table 1: Statistics for RT of HBB-LB, LBA-HB, ILBA-HB algorithms")
+```
+
+The next response to be analyzed is the Degree of Imbalance (DI).
+The DI is the imbalancing rate of the VM depending on the imbalance in the VM load.
+The distribution and statistics of this measure are shown on the next figure and table 2.
+
+
+```{r}
+#
+q <- dataT %>% ggplot(aes(x = Algorithm, y = DI))
+q <- q + geom_boxplot(aes(fill=Algorithm))
+q <- q + two_images
+#
+```
+
+```{r DI_boxplot, fig.align='center', fig.width=4, fig.height=3, fig.show="hold", out.width="49%"}
+q + scale_fill_manual(values=my_colors)
+```
+
+```{r DI_table}
+kable(fread("Stat,HBB-LB,LBA-HB,ILBA-HB
+Min.,1.414,1.205,0.703
+1st Qu.,1.415,1.272,1.217
+Median,2.772,1.301,1.265
+Mean,2.700,1.297,1.352
+3rd Qu.,3.921,1.314,1.387
+Max.,4.497,1.370,2.458"), align='cccc',caption="Table 2: Statistics for DI of HBB-LB, LBA-HB, ILBA-HB algorithms")
+```
+
+The last response to be analyzed is the Makespan.
+This measure indicate the completion time of a VM, generally it includes all the hold time/wait time of the VM.
+The next figure indicates the distribution of results for Makespan and the table 3 the statistics these distributions.
+
+```{r}
+#
+q <- dataT %>% ggplot(aes(x = Algorithm, y = Makespan))
+q <- q + geom_boxplot(aes(fill=Algorithm))
+q <- q + labs(x = "Experiment", y = "Makespan [sec]")
+q <- q + two_images
+#
+```
+
+```{r make_boxplot, fig.align='center', fig.width=4, fig.height=3, fig.show="hold", out.width="49%"}
+q + scale_fill_manual(values=my_colors)
+```
+
+```{r make_table}
+kable(fread("Stat,HBB-LB,LBA-HB,ILBA-HB
+Min.,12.0,3.00,2.00
+1st Qu.,36.0,27.00,24.00
+Median,202.0,64.00,64.72
+Mean,372.6,80.85,77.98
+3rd Qu.,604.1,117.74,109.75
+Max.,1714.5,269.99,259.99"), align='cccc',caption="Table 3: Statistics for Makespan of HBB-LB, LBA-HB, ILBA-HB algorithms")
+```
+
+After have a overview of the data distribution, the next test to be done will be the correlation between all responses.
+How the Response Time (RT), Degree of Imbalance (DI) and Makespan comes from the same experiments is useful to know if there are any association between those features.
+This test is performed graphically with the scatter-plot of the next figure, and numerically computing the Spearman's rank correlation coefficients on the table 4.
+
+```{r pairs, fig.align='center', fig.width=5, fig.height=4}
+pairs(select(dataT,RT,DI,Makespan), 
+      main="Pairs Plot",
+      col = my_colors[2])
+```
+
+```{r cor_table}
+kable(round(cor(select(dataT,RT,DI,Makespan),
+                method="spearman")
+            ,2), 
+      caption="Table 4: Spearman's rank correlation coefficient")
+```
+
+With this test it can be concluded that the RT and Makespan responses are highly associate due the linearity of its graph and because its correlation coefficient is practically 1.
+
+
+To perform the comparison it is necessary to take the same reference on measures like Response Time and Makespan.
+This is necessary because variations in the number of clouds or their lengths weight highly in the responses.
+The follow images shows with more details the need of to have the same reference on the experiments.
+
+```{r}
+s <- filter(dataT, Tasks == 20000) %>% 
+        ggplot(aes(x=Length, y = RT, color=Algorithm))
+s <- s + geom_point(size=1) 
+s <- s + labs(x = "Length [MI]", y = "Response Time [sec]")
+#s <- s + labs(title = trim_title("Response time of cloudlets with 2000 tasks for ILBA-HB experiments"))
+s <- s + theme(legend.position = "none")
+s <- s + two_images_small
+#
+t <- filter(dataT, Length == 1000) %>% 
+        ggplot(aes(x=Tasks, y = Makespan, color=Algorithm))
+t <- t + geom_point(size=1) 
+t <- t + labs(x = "Number of Tasks", y = "Makespan [sec]")
+#t <- t + labs(title = trim_title("Makespan of cloudlets with 200 MI for ILBA-HB experiments"))
+t <- t + theme(legend.position = "none")
+#s <- s + facet_wrap(~Tasks, scales = "free")
+t <- t + two_images_small
+```
+
+```{r without_reference, fig.align='center', fig.width=4, fig.height=3,  fig.show="hold", out.width="49%"}
+s + scale_fill_manual(values=my_colors)
+t + scale_fill_manual(values=my_colors[-1])
+#
+```
+
+How the measures have that increasing behavior they can not directly compared, it is necessary a new reference that minimize this behavior.
+The new reference for Makespan and Response time will be a  cloudlet with 2000 tasks and 100 MI of length, that it is the smaller cloudlet on the experiments.
+For adjust the data to this new reference it is necessary divide the corresponding measure to the number of tasks and length of it:
+
+Measure = Measure x 2000 x 100 / (Tasks x Length)
+
+Where the Measure can be RT or Makespan because DI don't need this adjustment.
+Performing the adjustment the data results with the dispersion showed on the next figure.
+
+```{r}
+#
+s <- filter(dataM, Tasks == 20000) %>% 
+        ggplot(aes(x=Length, y = RT, color=Algorithm))
+s <- s + geom_point(size=1) 
+s <- s + labs(x = "Length [MI]", y = "Response Time [sec]")
+#s <- s + labs(title = trim_title("Response time of cloudlets with 2000 tasks for ILBA-HB experiment in the new reference",35))
+s <- s + two_images_small
+#
+t <- filter(dataM, Length == 1000) %>% 
+        ggplot(aes(x=Tasks, y = Makespan, color=Algorithm))
+t <- t + geom_point(size=1) 
+t <- t + labs(x = "Number of Tasks", y = "Makespan [sec]")
+#t <- t + labs(title = trim_title("Makespan of cloudlets with 200 MI for\nILBA-HB experiments in the new reference",35))
+t <- t + two_images_small
+```
+
+```{r new_reference, fig.align='center', fig.width=4, fig.height=3,  fig.show="hold", out.width="49%"}
+s + scale_fill_manual(values=my_colors)
+t + scale_fill_manual(values=my_colors[-1])
+#
+```
+
+As can be seen, after the adjustment, the data don't have an high increasing trend as in the first images.
+Now, all measures can be compared with a reduced influence of the number of tasks or their length.
+
+To perform the comparison between measures it is necessary to check the normality of the data.
+If the data have a normal behavior, a ANOVA test will be done.
+However, ff the data don't have a normal behavior, a Kruskal-Wallis test will be done instead.
+The normality is visually checked with Quantile-Quantile plots.
+How Makespan have a highly correlation with the RT its plot was omitted on the next figure that correspond to the Q-Q plots.
+
+```{r QQ, fig.align='center', fig.width=4, fig.height=3, fig.show="hold", out.width="49%"}
+p <- ggqqplot(dataM$RT, color = my_colors[3])
+ggpar(p, main = "Q-Q plot for RT")
+p <- ggqqplot(dataM$DI, color = my_colors[3])
+ggpar(p, main = "Q-Q plot for DI")
+#p <- ggqqplot(dataM$Makespan)
+#ggpar(p, main = "Quantile-Quantile plot Makespan")
+```
+
+This plot shows that the data don't follow a normal distribution.
+Thus, the selected hypothesis test is the Kruskal-Wallis test.
+The null and alternative hypothesis for this test are:
+
+* H_0: All medians are equal
+* H_1: At least one median is different
+
+The test gave these results:
+
+```{r krusal_table}
+#kruskal.test(Makespan ~ Algorithm, data = dataM)
+kable(fread("Statistic,RT,DI,Makespan
+p-value,<2.2e-16,<2.2e-16,<2.2e-16
+Kruskal-Wallischi-squared,92.485,159.98,82.445"),
+caption="Table 5: Results of the kruskal test")
+```
+
+How all p-values are less than 0.05 it is possible to conclude that all measures are statistically different between algorithms.
+Now, a pairwise comparison between the algorithms, using the Wilcoxon signed-rank test, will be done.
+The null and alternative hypothesis are:
+
+* H_0: 1st algoritm >= 2nd algoritm   
+* H_1: 1st algoritm < 2nd algoritm
+
+The first result to be analysed is the RT.
+The results for this test are showed on the table 6.
+
+```{r wilco_table}
+#pairwise.wilcox.test(dataM$RT, dataM$Algorithm, p.adjust.method = "BH", alternative='less')
+kable(fread("  ,HBB-LB,ILBA-HB
+ILBA-HB,=1.6e-10,-
+LBA-HB,=1.6e-10,1.00"),
+caption="Table 6: Results of the Wilcoxon signed-rank test for RT")
+```
+
+The 1st algorithm correspond to the first columns and the 2nd algoritm to the header row on the null and alternative hypothesis previously defined.
+With this results it is possible to conclude that the RT for the ILBA-HB algorithm is statistically smaller than the other algorithms.
+How makespan reposes have high correlation with RT, they are expected to have a high similarity on the results of this test.
+
+```{r}
+kable(fread("  ,HBB-LB,ILBA-HB
+ILBA-HB,=1.4e-10,-
+LBA-HB,=2.6e-10,1.00"),
+caption="Table 7: Results of the Wilcoxon signed-rank test for Makespan")
+```
+
+And again it is possible to conclude that the Makespan for the ILBA-HB algorithm is statistically smaller than the other algorithms.
+Finally, the last test consider the DI is done:
+
+```{r}
+kable(fread("  ,HBB-LB,ILBA-HB
+ILBA-HB,=2e-16,-
+LBA-HB,=2e-16,0.78"),
+caption="Table 8: Table 8: Results of the Wilcoxon signed-rank test for DI")
+```
+
+With this result it is possible to conclude that the DI for the ILBA-HB algorithm is statistically smaller than the other algorithms.
+
+Now tests will be done with the perspective of a VM.
+The follow hypotheses test will prove if there are a significant difference on the power consumption between VMs with improved QoS values and VMs with normal QoS values.
+For this test a Cloudlet always utilize all the available CPU and RAM capacity.
+The power consumption model is based on a 4Gb DDR4 ram and a intel core i3 processor.
+2 algorithm are taking on count: LBA-HB and ILBA-HB.
+The ILBA-HB algorithm works improving the load, execution time (resulting time), power consumed and cost of LBA-HB algorithm.
+In brief, the ILBA-HB algorithm use the previously mentioned parameters to reassign the VMs to the Cloudlets and thus improve the DI.
+First, a boxplot will be done for look the dispersion of the power consumed by VMs of both algorithms.
+That graph can be seen on the next igure, and its statistics on the table 9.
+
+```{r }
+a = filter(dataVM, Algorithm!='HBB-LB', Power != 0)
+b = select(dataT, Experiment, Tasks, Length)
+c = inner_join(a,b,by='Experiment')
+c = unique(c)
+
+s <- filter(c, Tasks == 20000) %>% 
+        ggplot(aes(x=Length, y = Power, color=Algorithm))
+s <- s + geom_point(size=1) 
+s <- s + labs(x = "Length [MI]", y = "Response Time [sec]")
+
+d <- mutate(c, Power = Power *100*2000/ (Tasks*Length))
+
+t <- filter(d, Tasks == 20000) %>% 
+        ggplot(aes(x=Length, y = Power, color=Algorithm))
+t <- t + geom_point(size=1) 
+t <- t + labs(x = "Length [MI]", y = "Response Time [sec]")
+```
+
+```{r fig.align='center', fig.width=4, fig.height=3}
+p <- filter(d, Algorithm != 'HBB-LB') %>%
+     ggplot(aes(x = Algorithm, y = Power))
+p <- p + geom_boxplot(aes(fill=Algorithm))
+p <- p + labs(x = "Experiment", y = "Power Consumed [W]")
+p <- p + two_images
+p
+#
+```
+
+```{r}
+kable(fread("  ,LBA-HB,ILBA-HB
+Min.,0.380,0.010
+1st Qu.,0.988,0.711
+Median,1.687,1.450
+Mean,2.670,2.345
+3rd Qu.,2.862,2.778
+Max.,15.150,20.200"),
+caption="Table 9: Dispersion of the power consumed by VMs")
+```
+
+
+How there are a lo of outliers on the boxplots is easy to conclude that the distribution does not follow a normal behavior.
+So, a Wilcoxon rank sum test will prove if there are significant changes on power consumption for both algorithms.
+The p-value for this test results on:
+
+p-value = 0.6128
+
+How the p-value is greater that 0.05 there is no way to reject the null hypothesis.
+Therefore, there is not statistical evidence to say that the power consumption between both algorithms are different.
