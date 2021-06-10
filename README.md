@@ -36,7 +36,7 @@ Host Response Time. The parameters of Fuzzy VM Selector are Consumed
 Power, VM Cost, and VM Execution Time. The fuzzy blocks were programmed
 using the
 [jFuzzyLogic](http://jfuzzylogic.sourceforge.net/html/java.html)
-library.
+library. The Fuzzy blocks code are in the file ./Main files from the java project/DatacenterBroker.java, in the fuzzy_system function.
 
 ## Results and discusion
 
