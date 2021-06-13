@@ -1,0 +1,65 @@
+\section{Introduction}
+\label{sec:intro}
+\PARstart{T}{here} are many areas in which unmanned aerial vehicles are helpful to accomplish complex or risky tasks. 
+Some of these fields are related to civil structures monitoring, mapping of urban and natural areas, search and rescue in emergency scenarios, and environmental monitoring. 
+Also, a very important application of UAVs is related to source identification and location. 
+A source could be radiation, acoustic signals, electromagnetic signals, or a chemical agent. 
+Our work is related to this kind of applications, where the main objective is the location of an air pollutant source on an outdoor scenario considering realistic time constraints. 
+The task is accomplished by a couple of autonomous quadcopters equipped with appropriate sensors which measure a specific pollutant. 
+UAVs can move with 6 degrees of freedom and are capable to fly for limited time in different environments, making them suitable to take the pollutant samples.
+
+In the literature, these  platforms are widely used.
+For instance, \cite{li2020multi, yang2019towards, zou2015particle, nickels2019effective, chen2020combining, feng2019source} use multiple mobile robots to sample the field. 
+In these works, global optimization algorithms command the movement of each robot. 
+In \cite{li2020multi} details are given about a system incorporating a leading-follower behavior with a PSO algorithm, which is responsible of guiding the mobile robots. 
+Each robot is considered as a particle of the swarm and the Schrödinger equation guides its movement.
+The leader of the swarm is chosen depending on the global optimal position. 
+The followers serve the leader providing measurements and navigating in the direction chosen by the leader. 
+Authors of \cite{yang2019towards} use an indoor controlled environment to perform  source tracking. 
+Two experiments are developed in that work: with and without airflow information. 
+The airflow is varied with a displacement ventilation or mixing ventilation. 
+For each experiment six terrestrial robots are guided in 3 phases: finding the plume (with a random divergence strategy), tracking the plume (by a standard and improved Whale Optimization Algorithm) and declaring the source.
+
+In a platform with multiple agents, the cooperation is a powerful tool to succeed in the task of finding a source.
+Research reports in \cite{facinelli2019cooperative, euler2017optimized, bayat2017environmental, li2017potential} focus on reducing their time to accomplish a mission and exchange information between each robotic agent. 
+In \cite{facinelli2019cooperative} the agents share their position, velocity, and formation vector to perform a coordinated scanning of the search area. 
+There are four UAV agents in this approach.
+The exploration phase carries out three strategies: leader-follower, random walk scanning with feasible drone orientations, and Brownian motion behavior.
+%determinates collision avoidance and boundary collision.
+The exploration phase performs the following steps:
+\begin{enumerate}
+    \item The UAV that reacts to a gas measurement is transformed in a leader
+    \item A circular formation around the leader is performed
+    \item The swarm moves along a logarithmic spiral
+    \item If the $i-th$ UAV detects a gas concentration, greater than the previous measures, that UAV is considered the new leader
+\end{enumerate}
+
+The plume is simulated with a Gaussian model, and the experiments assume that the gas concentration is a decreasing function of the distance from the source.
+
+Previous strategies were proved on simulated environments or indoor controlled experiments.
+However, in the literature is possible to find several works implemented in outdoor scenarios \cite{bayat2017environmental,villa2016development,ya2017uav,yungaicela2017design}. 
+In these works, the focus is made on the construction of a platform with high maneuverability and capacity to sense air pollutant concentrations. 
+With those platforms it is possible to execute the exploratory and exploitative strategies for source tracking. 
+To carry out the experiments, it is necessary to consider all security aspects about the pollutant plume and the UAVs flight. 
+Different pollutant sources have been considered in research works, such as sources of alcohol \cite{rossi2015autonomous}, sound \cite{hoshiba2017design}, or even it is considered to fly in zones where the presence of contamination is  known \cite{black2018adaption,yang2018natural,yang2017real}. 
+%For a secure real flight, the local regulations need to be considered. For instance, some of the Mexican regulation are \cite{leyes_drones_1}: 
+%\begin{itemize}
+%\item The pilot must operate the aircraft within line of sight; must be able to see it throughout the flight.
+%\item The pilot must maintain control of the flight path of the remotely piloted aircraft at all times.
+%\item The aircraft must not be operated remotely, in open or closed places where there are more than 12 people.
+%\end{itemize}
+
+This paper presents results on the application of a novel intelligent strategy to locate an air pollutant source with two UAVs.
+A simulation system based on two UAVs and the MAVLINK navigation protocol \cite{koubaa2019micro} was developed. 
+The main purpose of this simulation is to allow a transparent migration of the developed scripts into a real platform, similar to that reported in \cite{yungaicela2017design}.
+Additionally, in this work, an analysis of the performance efficiency of the UAVs to track and locate an air pollutant source is performed.
+To this purpose, parameters like distance to the source, time to finish the exploration phase, highest contamination measure taken and ability to detect higher contaminant measurements will be statistically analyzed.   
+
+Three different strategies for the exploration phase, each accompanied with its respective strategy for the exploitation phase, are tested in a scenario with a simulated pollutant plume. 
+A punctual source and an advection-diffusion model generate this plume.
+Here, wind data taken from real measurements is used, so the simulation behavior is closer to reality.
+
+The main content of this paper is organized as follows: section 2 describes the simulation environment and the air pollutant distribution model, the construction of probabilistic map and the explanation of strategies. Section 3 presents the results obtained in experiments and the analysis. The conclusions and future work are shown in section 4.
+
+%************************************************
+
