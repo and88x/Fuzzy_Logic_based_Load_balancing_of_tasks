@@ -46,7 +46,7 @@ behavior inspired load balancing* (HBB-LB, proposed in the article
 previously mentioned), *Load Balancing Algorithm based on Honeybee
 behavior* (LBA-HB) and the proposed *Improved LBA-HB* (ILBA-HB). For
 more details refer to
-[this](https://d1wqtxts1xzle7.cloudfront.net/66255412/ijatcse841022021.pdf?1618310229=&response-content-disposition=inline%3B+filename%3DHybrid_Load_Balancing_Approach_based_on.pdf&Expires=1623284460&Signature=DZOUAemwX5WHSvMM0CSBO1YBgF1NjcDLTloKKahz-D8vweRX1SymVZelVWVDH2O0WP3MMzAaRqNcKO9N0cwTnM8esc-C-iLC9W1g-0A2DlOXhK0UNwdPS4hYg~NkkK-LLG3R~N7COzWT6ckkbHoOdfwYygb90hRsefEMYUe9SVsz2J5kUIRgt96ukKhfBQCvcbM9HrgHhOZ-JeoIMu-47Nyl8FNY42LV~47p~EWl7X6kJW~Im3XgxLufrFahaqWmrcpo7pGO67oPF2d2h-sJQJNdO2-JqU~WrlxfGlNAVKzSoDdUTLRlC0ubuuL1KEkmucr5tzR314eWBLF9lqgmtQ__&Key-Pair-Id=APKAJLOHF5GGSLRBV4ZA)
+[this](http://www.warse.org/IJATCSE/static/pdf/file/ijatcse841022021.pdf)
 document. The simulation with the CloudSim framework follow the next
 steps:
 
